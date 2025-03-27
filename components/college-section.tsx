@@ -30,12 +30,13 @@ export default function CollegeSection() {
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null)
   const itemsPerPage = 3
 
+
   useEffect(() => {
     async function fetchColleges() {
       try {
         setLoading(true)
         const data = await getColleges()
-        setColleges(data)
+        setColleges(data || []) // ✅ Ensures state is always an array
       } catch (error) {
         console.error("Error fetching colleges:", error)
       } finally {
@@ -44,7 +45,7 @@ export default function CollegeSection() {
     }
     fetchColleges()
   }, [])
-
+  
   const totalPages = Math.ceil(colleges.length / itemsPerPage)
 
   const nextPage = () => {
