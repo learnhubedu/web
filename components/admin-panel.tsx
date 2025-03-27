@@ -45,6 +45,7 @@ import {
   Download,
 } from "lucide-react"
 
+// 1. Add logo field to the College type
 type College = {
   id: string
   name: string
@@ -55,6 +56,7 @@ type College = {
   tuition?: string
   website?: string
   image?: string
+  logo?: string // Add logo field
   brochure?: string
   created_at?: string
 }
@@ -67,6 +69,7 @@ export function AdminPanel() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  // 2. Add logo to the newCollege state
   const [newCollege, setNewCollege] = useState({
     name: "",
     location: "",
@@ -76,6 +79,7 @@ export function AdminPanel() {
     tuition: "",
     website: "",
     image: "",
+    logo: "", // Add logo field
     brochure: "",
   })
   const [collegeToDelete, setCollegeToDelete] = useState<College | null>(null)
@@ -91,6 +95,8 @@ export function AdminPanel() {
   } | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  // 3. Add logo file input ref
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
   // Authentication Check
   useEffect(() => {
@@ -226,6 +232,60 @@ export function AdminPanel() {
     }
   }
 
+  // 4. Add a function to handle logo upload
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      setIsUploading(true)
+
+      // Create a unique file name
+      const fileExt = file.name.split(".").pop()
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`
+      const filePath = `college-logos/${fileName}`
+
+      // Upload the file to Supabase Storage
+      const { error: uploadError, data } = await supabase.storage.from("colleges").upload(filePath, file)
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      // Get the public URL
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("colleges").getPublicUrl(filePath)
+
+      // Update the college logo URL
+      if (collegeToEdit) {
+        setCollegeToEdit({ ...collegeToEdit, logo: publicUrl })
+      } else {
+        setNewCollege({ ...newCollege, logo: publicUrl })
+      }
+
+      setNotification({
+        type: "success",
+        message: "Logo uploaded successfully!",
+        visible: true,
+      })
+
+      // Auto-hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000)
+    } catch (error: any) {
+      setNotification({
+        type: "error",
+        message: `Upload failed: ${error.message}`,
+        visible: true,
+      })
+
+      // Auto-hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   // Handle Brochure Upload
   const handleBrochureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -287,12 +347,17 @@ export function AdminPanel() {
     fileInputRef.current?.click()
   }
 
+  // 5. Add a function to trigger logo file input
+  const triggerLogoInput = () => {
+    logoInputRef.current?.click()
+  }
+
   // Add a function to trigger brochure file input
   const triggerBrochureInput = () => {
     brochureInputRef.current?.click()
   }
 
-  // Handle Add College
+  // 6. Update handleAddCollege to include logo
   const handleAddCollege = async () => {
     if (!newCollege.name || !newCollege.location) {
       setNotification({
@@ -317,6 +382,7 @@ export function AdminPanel() {
         tuition: newCollege.tuition,
         website: newCollege.website,
         image: newCollege.image,
+        logo: newCollege.logo, // Add logo field
         brochure: newCollege.brochure,
       })
 
@@ -329,6 +395,7 @@ export function AdminPanel() {
         tuition: "",
         website: "",
         image: "",
+        logo: "", // Reset logo field
         brochure: "",
       })
 
@@ -380,7 +447,7 @@ export function AdminPanel() {
     }
   }
 
-  // Add a function to handle editing a college
+  // 7. Update handleEditCollege to include logo
   const handleEditCollege = async () => {
     if (!collegeToEdit) return
 
@@ -398,6 +465,7 @@ export function AdminPanel() {
           tuition: collegeToEdit.tuition,
           website: collegeToEdit.website,
           image: collegeToEdit.image,
+          logo: collegeToEdit.logo, // Add logo field
           brochure: collegeToEdit.brochure,
         })
         .eq("id", collegeToEdit.id)
@@ -652,6 +720,91 @@ export function AdminPanel() {
                       </div>
                     </div>
 
+                    {/* 8. Add the logo upload UI in the Add College dialog after the image upload section */}
+                    {/* Find the closing </div> tag after the image upload section and add this before it: */}
+                    <div className="grid gap-2">
+                      <Label htmlFor="logo">College Logo</Label>
+                      <div className="flex flex-col gap-3">
+                        <input
+                          type="file"
+                          ref={logoInputRef}
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleLogoUpload}
+                        />
+
+                        <div
+                          onClick={triggerLogoInput}
+                          className={`border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                            isUploading ? "bg-muted/50 border-muted" : "hover:bg-muted/50 hover:border-primary/50"
+                          }`}
+                        >
+                          {newCollege.logo ? (
+                            <div className="w-full flex flex-col items-center gap-3">
+                              <div className="relative w-24 h-24 rounded-md overflow-hidden border">
+                                <img
+                                  src={newCollege.logo || "/placeholder.svg"}
+                                  alt="College logo preview"
+                                  className="w-full h-full object-contain"
+                                />
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    setNewCollege({ ...newCollege, logo: "" })
+                                  }}
+                                  className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black/90"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              </div>
+                              <span className="text-sm text-muted-foreground">Click to change logo</span>
+                            </div>
+                          ) : (
+                            <>
+                              {isUploading ? (
+                                <Loader2 className="h-10 w-10 text-muted-foreground animate-spin" />
+                              ) : (
+                                <Image className="h-10 w-10 text-muted-foreground" />
+                              )}
+                              <p className="text-sm font-medium">
+                                {isUploading ? "Uploading..." : "Click to upload a logo"}
+                              </p>
+                              <p className="text-xs text-muted-foreground">SVG, PNG, JPG (max. 2MB)</p>
+                            </>
+                          )}
+                        </div>
+
+                        {!newCollege.logo && (
+                          <div className="flex items-center">
+                            <div className="h-px flex-1 bg-muted"></div>
+                            <span className="px-2 text-xs text-muted-foreground">or</span>
+                            <div className="h-px flex-1 bg-muted"></div>
+                          </div>
+                        )}
+
+                        {!newCollege.logo && (
+                          <div className="flex gap-2">
+                            <Input
+                              id="logoUrl"
+                              value={newCollege.logo}
+                              onChange={(e) => setNewCollege({ ...newCollege, logo: e.target.value })}
+                              placeholder="Enter logo URL directly"
+                              className="flex-1"
+                            />
+                            {newCollege.logo && (
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setNewCollege({ ...newCollege, logo: "" })}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     {/* Add brochure upload section */}
                     <div className="grid gap-2">
                       <Label htmlFor="brochure">College Brochure</Label>
@@ -798,10 +951,18 @@ export function AdminPanel() {
                   ) : (
                     filteredColleges.map((college) => (
                       <tr key={college.id} className="hover:bg-muted/50">
+                        {/* 10. Update the college display in the table to show the logo if available */}
+                        {/* Find the college name cell in the table and modify it to show the logo: */}
                         <td className="border-b p-2">
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 overflow-hidden rounded-md bg-muted flex items-center justify-center">
-                              {college.image ? (
+                              {college.logo ? (
+                                <img
+                                  src={college.logo || "/placeholder.svg"}
+                                  alt={`${college.name} logo`}
+                                  className="h-full w-full object-contain"
+                                />
+                              ) : college.image ? (
                                 <img
                                   src={college.image || "/placeholder.svg"}
                                   alt={college.name}
@@ -874,6 +1035,20 @@ export function AdminPanel() {
                                   ) : (
                                     <div className="aspect-video w-full rounded-lg bg-muted flex items-center justify-center">
                                       <Image className="h-12 w-12 text-muted-foreground" />
+                                    </div>
+                                  )}
+                                  {/* 11. Add logo display in the college details dialog */}
+                                  {/* Find the college details dialog and add this after the image display: */}
+                                  {college.logo && (
+                                    <div className="mt-4">
+                                      <h3 className="text-sm font-medium text-muted-foreground mb-2">College Logo</h3>
+                                      <div className="w-32 h-32 bg-white rounded-lg border p-2 flex items-center justify-center">
+                                        <img
+                                          src={college.logo || "/placeholder.svg"}
+                                          alt={`${college.name} logo`}
+                                          className="max-h-full max-w-full object-contain"
+                                        />
+                                      </div>
                                     </div>
                                   )}
                                   <div className="grid grid-cols-2 gap-4">
@@ -1128,6 +1303,88 @@ export function AdminPanel() {
                                                 <X className="h-4 w-4" />
                                               </Button>
                                             )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* 9. Add the logo upload UI in the Edit College dialog after the image upload section */}
+                                    {/* Find the closing </div> tag after the image upload section in the Edit dialog and add this before it: */}
+                                    <div className="grid gap-2">
+                                      <Label htmlFor="edit-logo">College Logo</Label>
+                                      <div className="flex flex-col gap-3">
+                                        <input
+                                          type="file"
+                                          ref={logoInputRef}
+                                          className="hidden"
+                                          accept="image/*"
+                                          onChange={handleLogoUpload}
+                                        />
+
+                                        <div
+                                          onClick={triggerLogoInput}
+                                          className={`border-2 border-dashed rounded-md p-6 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                                            isUploading
+                                              ? "bg-muted/50 border-muted"
+                                              : "hover:bg-muted/50 hover:border-primary/50"
+                                          }`}
+                                        >
+                                          {collegeToEdit?.logo ? (
+                                            <div className="w-full flex flex-col items-center gap-3">
+                                              <div className="relative w-24 h-24 rounded-md overflow-hidden border">
+                                                <img
+                                                  src={collegeToEdit.logo || "/placeholder.svg"}
+                                                  alt="College logo preview"
+                                                  className="w-full h-full object-contain"
+                                                />
+                                                <button
+                                                  onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setCollegeToEdit({ ...collegeToEdit, logo: "" })
+                                                  }}
+                                                  className="absolute top-2 right-2 bg-black/70 text-white rounded-full p-1 hover:bg-black/90"
+                                                >
+                                                  <X className="h-4 w-4" />
+                                                </button>
+                                              </div>
+                                              <span className="text-sm text-muted-foreground">
+                                                Click to change logo
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <>
+                                              {isUploading ? (
+                                                <Loader2 className="h-10 w-10 text-muted-foreground animate-spin" />
+                                              ) : (
+                                                <Image className="h-10 w-10 text-muted-foreground" />
+                                              )}
+                                              <p className="text-sm font-medium">
+                                                {isUploading ? "Uploading..." : "Click to upload a logo"}
+                                              </p>
+                                              <p className="text-xs text-muted-foreground">SVG, PNG, JPG (max. 2MB)</p>
+                                            </>
+                                          )}
+                                        </div>
+
+                                        {!collegeToEdit?.logo && (
+                                          <div className="flex items-center">
+                                            <div className="h-px flex-1 bg-muted"></div>
+                                            <span className="px-2 text-xs text-muted-foreground">or</span>
+                                            <div className="h-px flex-1 bg-muted"></div>
+                                          </div>
+                                        )}
+
+                                        {!collegeToEdit?.logo && (
+                                          <div className="flex gap-2">
+                                            <Input
+                                              id="edit-logoUrl"
+                                              value={collegeToEdit?.logo || ""}
+                                              onChange={(e) =>
+                                                setCollegeToEdit({ ...collegeToEdit, logo: e.target.value })
+                                              }
+                                              placeholder="Enter logo URL directly"
+                                              className="flex-1"
+                                            />
                                           </div>
                                         )}
                                       </div>
