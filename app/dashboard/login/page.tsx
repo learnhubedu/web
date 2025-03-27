@@ -83,7 +83,7 @@ export default function AuthPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={mode} onValueChange={(value) => setMode(value as "login" | "signup")} className="w-full">
+            <Tabs value={mode} onValueChange={(value) => setMode(value as "login" )} className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="login">Login</TabsTrigger>
 {/*                 <TabsTrigger value="signup">Sign up</TabsTrigger> */}
