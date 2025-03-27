@@ -2,19 +2,20 @@
 
 import { useEffect, useState } from "react"
 import { getColleges } from "@/lib/supabase-college-api"
-import { ChevronLeft, ChevronRight, ExternalLink, MapPin, Users, Calendar } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ExternalLink, MapPin, Users, Calendar } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 
-// Define a type for the college data
+// Update the College type to include the logo field
 type College = {
   id: string
   name: string
   location: string
   image: string
+  logo?: string // Add logo field
   description?: string
   foundedYear?: number
   website?: string
@@ -30,7 +31,6 @@ export default function CollegeSection() {
   const [selectedCollege, setSelectedCollege] = useState<College | null>(null)
   const itemsPerPage = 3
 
-
   useEffect(() => {
     async function fetchColleges() {
       try {
@@ -45,7 +45,7 @@ export default function CollegeSection() {
     }
     fetchColleges()
   }, [])
-  
+
   const totalPages = Math.ceil(colleges.length / itemsPerPage)
 
   const nextPage = () => {
@@ -139,6 +139,17 @@ export default function CollegeSection() {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                      {/* Add logo display if available */}
+                      {college.logo && (
+                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
+                          <img
+                            src={college.logo || "/placeholder.svg"}
+                            alt={`${college.name} logo`}
+                            className="h-8 w-auto object-contain"
+                          />
+                        </div>
+                      )}
                     </div>
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
@@ -236,6 +247,17 @@ export default function CollegeSection() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+
+                  {/* Add logo display in the modal if available */}
+                  {selectedCollege.logo && (
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md">
+                      <img
+                        src={selectedCollege.logo || "/placeholder.svg"}
+                        alt={`${selectedCollege.name} logo`}
+                        className="h-12 w-auto object-contain"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="relative p-8 h-full flex flex-col justify-end text-white">
@@ -306,7 +328,19 @@ export default function CollegeSection() {
                           </span>
                         </div>
                       )}
-                   
+                      {/* Add logo display in the details section if available */}
+                      {selectedCollege.logo && (
+                        <div>
+                          <span className="text-sm text-gray-500 block">University Logo</span>
+                          <div className="mt-2 bg-white p-3 rounded-lg border border-gray-200 inline-block">
+                            <img
+                              src={selectedCollege.logo || "/placeholder.svg"}
+                              alt={`${selectedCollege.name} logo`}
+                              className="h-12 w-auto object-contain"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -383,46 +417,46 @@ export default function CollegeSection() {
                       </div>
                     </div>
                   )}
-                        {selectedCollege.brochure && (
-                        <div>
-                          <h4 className="text-lg font-semibold mb-4 text-gray-900 flex items-center">
-                            <span className="bg-red-100 text-red-800 p-1.5 rounded-md mr-2">
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="lucide lucide-file-text"
-                              >
-                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" x2="8" y1="13" y2="13" />
-                                <line x1="16" x2="8" y1="17" y2="17" />
-                                <line x1="10" x2="8" y1="9" y2="9" />
-                              </svg>
-                            </span>
-                            College Brochure
-                          </h4>
-                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                            <p className="text-sm text-gray-500 mb-3">
-                              Download the official brochure for detailed information:
-                            </p>
-                            <a
-                              href={selectedCollege.brochure}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:shadow transition-all duration-200"
-                            >
-                              View Brochure <ExternalLink className="h-4 w-4" />
-                            </a>
-                          </div>
-                        </div>
-                      )}
+                  {selectedCollege.brochure && (
+                    <div>
+                      <h4 className="text-lg font-semibold mb-4 text-gray-900 flex items-center">
+                        <span className="bg-red-100 text-red-800 p-1.5 rounded-md mr-2">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="lucide lucide-file-text"
+                          >
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" x2="8" y1="13" y2="13" />
+                            <line x1="16" x2="8" y1="17" y2="17" />
+                            <line x1="10" x2="8" y1="9" y2="9" />
+                          </svg>
+                        </span>
+                        College Brochure
+                      </h4>
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                        <p className="text-sm text-gray-500 mb-3">
+                          Download the official brochure for detailed information:
+                        </p>
+                        <a
+                          href={selectedCollege.brochure}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium bg-white px-4 py-2 rounded-lg border border-gray-200 shadow-sm hover:shadow transition-all duration-200"
+                        >
+                          View Brochure <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Website */}
                   {selectedCollege.website && (
@@ -446,12 +480,6 @@ export default function CollegeSection() {
                       </div>
                     </div>
                   )}
-
-                  {/* Image Gallery */}
-                  
-
-                  {/* All Data Fields */}
-                 
 
                   <div className="pt-4">
                     <Button className="w-full" onClick={closeCollegeDetails}>
