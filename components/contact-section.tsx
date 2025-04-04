@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Phone, Mail, MessageCircle, Send, AlertCircle, CheckCircle } from "lucide-react"
+import { Phone, Mail, MessageCircle, Send, AlertCircle, CheckCircle, MapPin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -151,7 +151,10 @@ export default function ContactSection() {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="flex items-center p-4 rounded-lg bg-muted/50 transition-colors hover:bg-muted">
+                <a
+                  href="tel:+916282595965"
+                  className="flex items-center p-4 rounded-lg bg-muted/50 transition-colors hover:bg-muted"
+                >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
@@ -159,15 +162,32 @@ export default function ContactSection() {
                     <p className="text-sm font-medium">Phone</p>
                     <p className="text-sm text-muted-foreground">+916282595965</p>
                   </div>
-                </div>
+                </a>
 
-                <div className="flex items-center p-4 rounded-lg bg-muted/50 transition-colors hover:bg-muted">
+                <a
+                  href="mailto:info@learnhubedu.in"
+                  className="flex items-center p-4 rounded-lg bg-muted/50 transition-colors hover:bg-muted"
+                >
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
                     <Mail className="h-5 w-5 text-primary" />
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">info@learnhubedu.in</p>
+                  </div>
+                </a>
+
+                <div className="flex items-center p-4 rounded-lg bg-muted/50 transition-colors hover:bg-muted">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                    <MapPin className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium">Address</p>
+                    <p className="text-sm text-muted-foreground">
+                      #61/A, Chanokund, Thadikkadavu P.O., Taliparamba,
+                      <br />
+                      Kannur, Kerala - 670581
+                    </p>
                   </div>
                 </div>
 

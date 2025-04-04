@@ -721,7 +721,6 @@ export function AdminPanel() {
                     </div>
 
                     {/* 8. Add the logo upload UI in the Add College dialog after the image upload section */}
-                    {/* Find the closing </div> tag after the image upload section and add this before it: */}
                     <div className="grid gap-2">
                       <Label htmlFor="logo">College Logo</Label>
                       <div className="flex flex-col gap-3">
@@ -952,7 +951,6 @@ export function AdminPanel() {
                     filteredColleges.map((college) => (
                       <tr key={college.id} className="hover:bg-muted/50">
                         {/* 10. Update the college display in the table to show the logo if available */}
-                        {/* Find the college name cell in the table and modify it to show the logo: */}
                         <td className="border-b p-2">
                           <div className="flex items-center gap-3">
                             <div className="h-10 w-10 overflow-hidden rounded-md bg-muted flex items-center justify-center">
@@ -1038,7 +1036,6 @@ export function AdminPanel() {
                                     </div>
                                   )}
                                   {/* 11. Add logo display in the college details dialog */}
-                                  {/* Find the college details dialog and add this after the image display: */}
                                   {college.logo && (
                                     <div className="mt-4">
                                       <h3 className="text-sm font-medium text-muted-foreground mb-2">College Logo</h3>
@@ -1309,7 +1306,6 @@ export function AdminPanel() {
                                     </div>
 
                                     {/* 9. Add the logo upload UI in the Edit College dialog after the image upload section */}
-                                    {/* Find the closing </div> tag after the image upload section in the Edit dialog and add this before it: */}
                                     <div className="grid gap-2">
                                       <Label htmlFor="edit-logo">College Logo</Label>
                                       <div className="flex flex-col gap-3">
