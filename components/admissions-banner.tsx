@@ -2,13 +2,11 @@
 
 import type React from "react"
 
-import { ArrowRight, CalendarIcon, ChevronDown, Loader2 } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
+import Image from "next/image"
+import { CalendarIcon, ChevronDown, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
-
-// UI Components
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,11 +16,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-
-// Import the server action (you'll need to create this file)
 import { sendApplicationEmail } from "../app/actions/send-application"
+import bgImage from "./image.jpg" // update path if different
 
-export default function Hero() {
+export default function AdmissionsBanner() {
   const [formOpen, setFormOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [date, setDate] = useState<Date>()
@@ -95,37 +92,36 @@ export default function Hero() {
   }
 
   return (
-    <div id="home" className="relative bg-white pt-12 sm:pt-16">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-blue-900 mix-blend-multiply opacity-80" />
-      </div>
+    <>
+      <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] flex items-center justify-center overflow-hidden">
+        {/* Background Image using next/image */}
+        <Image
+          src={bgImage || "/placeholder.svg"}
+          alt="Admissions background"
+          fill
+          className="object-cover object-center brightness-75"
+          priority
+        />
 
-      <div className="relative max-w-7xl mx-auto py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white">
-          Shape Your Future with
-          <span className="block text-blue-400 mt-1">LearnHub Edu</span>
-        </h1>
-        <p className="mt-4 sm:mt-6 max-w-2xl text-base sm:text-lg md:text-xl text-gray-300">
-          Expert guidance for your college journey. Get personalized consulting services to help you achieve your
-          academic goals and secure admissions to top universities.
-        </p>
-        <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60 z-10"></div>
+
+        {/* Content */}
+        <div className="relative z-20 text-center px-4 max-w-3xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-4">
+            Admissions Open Now!
+          </h1>
+          <p className="text-base sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 md:mb-8">
+            Join us for a brighter future. Enroll today.
+          </p>
           <Button
             onClick={() => setFormOpen(true)}
-            className="inline-flex items-center justify-center px-5 sm:px-6 py-2.5 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
-            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full hover:shadow-lg hover:from-blue-700 hover:to-blue-800 transition duration-300 text-base sm:text-lg font-medium border-2 border-white"
           >
             Apply Now
-            <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
-          <Link
-            href="#colleges"
-            className="inline-flex items-center justify-center px-5 sm:px-6 py-2.5 sm:py-3 border border-transparent text-sm sm:text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 w-full sm:w-auto"
-          >
-            Explore Colleges
-          </Link>
         </div>
-      </div>
+      </section>
 
       {/* Application Form Dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -328,7 +324,7 @@ export default function Hero() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }
 
