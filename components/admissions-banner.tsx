@@ -17,7 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { sendApplicationEmail } from "../app/actions/send-application"
-import bgImage from "./image.jpg" // update path if different
+import bgImage from "./image.png" // update path if different
 
 export default function AdmissionsBanner() {
   const [formOpen, setFormOpen] = useState(false)
